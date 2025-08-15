@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabletop Dice Roller</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Dice Selection UI - Single Side -->
+        <div id="dice-selector" class="dice-selector">
+            <div class="dice-button" data-dice="d20">
+                <div class="dice-icon">d20</div>
+                <div class="dice-count" id="count-d20">0</div>
+            </div>
+            <div class="dice-button" data-dice="d12">
+                <div class="dice-icon">d12</div>
+                <div class="dice-count" id="count-d12">0</div>
+            </div>
+            <div class="dice-button" data-dice="d10">
+                <div class="dice-icon">d10</div>
+                <div class="dice-count" id="count-d10">0</div>
+            </div>
+            <div class="dice-button" data-dice="d100">
+                <div class="dice-icon">d%</div>
+                <div class="dice-count" id="count-d100">0</div>
+            </div>
+            <div class="dice-button" data-dice="d8">
+                <div class="dice-icon">d8</div>
+                <div class="dice-count" id="count-d8">0</div>
+            </div>
+            <div class="dice-button" data-dice="d6">
+                <div class="dice-icon">d6</div>
+                <div class="dice-count" id="count-d6">0</div>
+            </div>
+            <div class="dice-button" data-dice="d4">
+                <div class="dice-icon">d4</div>
+                <div class="dice-count" id="count-d4">0</div>
+            </div>
+            <div class="dice-button" data-dice="d2">
+                <div class="dice-icon">d2</div>
+                <div class="dice-count" id="count-d2">0</div>
+            </div>
+        </div>
+
+        <!-- Main Rolling Area -->
+        <div id="main-area">
+            <!-- 2D Dice Rendering Canvas -->
+            <div id="dice-container">
+                <canvas id="dice-canvas"></canvas>
+            </div>
+        </div>
+
+        <!-- Bottom Drawer -->
+        <div id="bottom-drawer" class="drawer-collapsed">
+            <!-- Drawer Handle -->
+            <div id="drawer-handle">
+                <div class="handle-indicator"></div>
+                <button id="quick-roll-button" class="quick-roll-btn">Roll</button>
+            </div>
+
+            <!-- Drawer Content -->
+            <div id="drawer-content">
+                <!-- Roll Button -->
+                <div id="roll-controls">
+                    <button id="roll-button" class="primary-button">Roll Dice</button>
+                    <button id="clear-all-button" class="secondary-button">Clear All</button>
+                </div>
+
+                <!-- Results Display -->
+                <div id="results-panel">
+                    <h3>Roll Results</h3>
+                    <div id="individual-results"></div>
+                    <div id="group-totals"></div>
+                    <div id="grand-total"></div>
+                    
+                    <!-- Reroll Controls -->
+                    <div id="reroll-controls" style="display: none;">
+                        <button id="reroll-selected">Reroll Selected</button>
+                        <button id="remove-selected">Remove Selected</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

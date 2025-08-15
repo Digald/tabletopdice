@@ -1,0 +1,609 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    height: 100vh;
+    overflow: hidden;
+    touch-action: manipulation;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+    z-index: -1;
+    animation: gradientShift 15s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+#app {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+}
+
+/* Dice Selector Styles */
+.dice-selector {
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    width: 90px;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    padding: 20px 15px;
+    z-index: 100;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.dice-button {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    user-select: none;
+    backdrop-filter: blur(10px);
+    box-shadow: 
+        0 4px 16px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.dice-button:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 
+        0 8px 24px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.dice-button:active {
+    transform: scale(0.95);
+}
+
+.dice-icon {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1;
+    letter-spacing: 0.5px;
+}
+
+.dice-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 22px;
+    height: 22px;
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: 0 4px 12px rgba(238, 90, 36, 0.4);
+}
+
+.dice-count.active {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Main Area */
+#main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: 20px;
+    padding-bottom: 0;
+}
+
+#dice-container {
+    flex: 1;
+    position: relative;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 
+        0 12px 40px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+#dice-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Bottom Drawer */
+#bottom-drawer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: none;
+    border-radius: 24px 24px 0 0;
+    box-shadow: 
+        0 -8px 32px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 200;
+    max-height: 80vh;
+}
+
+.drawer-collapsed {
+    transform: translateY(calc(100% - 60px));
+}
+
+.drawer-expanded {
+    transform: translateY(0);
+}
+
+#drawer-handle {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: background-color 0.3s ease;
+    position: relative;
+}
+
+#drawer-handle:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.handle-indicator {
+    width: 60px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+#drawer-handle:hover .handle-indicator {
+    background: rgba(255, 255, 255, 0.6);
+    width: 80px;
+}
+
+.quick-roll-btn {
+    position: absolute;
+    right: 20px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 
+        0 4px 16px rgba(102, 126, 234, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    z-index: 10;
+}
+
+.quick-roll-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        0 6px 20px rgba(102, 126, 234, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.quick-roll-btn:active {
+    transform: translateY(0);
+}
+
+.quick-roll-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.drawer-expanded .quick-roll-btn {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#drawer-content {
+    padding: 24px;
+    overflow-y: auto;
+    max-height: calc(80vh - 60px);
+}
+
+/* Roll Controls */
+#roll-controls {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.primary-button {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 16px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 
+        0 8px 24px rgba(102, 126, 234, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+
+.primary-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 
+        0 12px 32px rgba(102, 126, 234, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.primary-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.primary-button:hover::before {
+    left: 100%;
+}
+
+.primary-button:active {
+    transform: translateY(0);
+}
+
+.secondary-button {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 14px 28px;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 
+        0 4px 16px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.secondary-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 
+        0 8px 24px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Results Panel */
+#results-panel {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 24px;
+    min-height: 120px;
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+#results-panel h3 {
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 18px;
+    letter-spacing: 0.5px;
+}
+
+#individual-results {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.dice-result {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    user-select: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    font-weight: 500;
+}
+
+.dice-result:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.dice-result.selected {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-color: rgba(255, 255, 255, 0.6);
+    color: white;
+    box-shadow: 
+        0 4px 16px rgba(102, 126, 234, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.dice-result.removed {
+    opacity: 0.3;
+    text-decoration: line-through;
+}
+
+#group-totals {
+    margin-bottom: 15px;
+}
+
+.group-total {
+    padding: 8px 0;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 600;
+    font-size: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 4px;
+}
+
+#grand-total {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.95);
+    padding: 20px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    margin-top: 16px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#reroll-controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+#reroll-controls button {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.9);
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-weight: 500;
+    font-size: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#reroll-controls button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .dice-selector {
+        width: 80px;
+        left: 10px;
+        padding: 15px 10px;
+    }
+    
+    .dice-button {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .dice-icon {
+        font-size: 12px;
+    }
+    
+    #main-area {
+        padding: 15px;
+    }
+    
+    #drawer-content {
+        padding: 20px;
+    }
+    
+    .drawer-collapsed {
+        transform: translateY(calc(100% - 50px));
+    }
+    
+    #drawer-handle {
+        height: 50px;
+    }
+    
+    .quick-roll-btn {
+        right: 15px;
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+    
+    .primary-button {
+        padding: 14px 24px;
+        font-size: 15px;
+    }
+    
+    #results-panel {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dice-selector {
+        width: 70px;
+        left: 5px;
+        padding: 10px 8px;
+    }
+    
+    .dice-button {
+        width: 42px;
+        height: 42px;
+    }
+    
+    .dice-icon {
+        font-size: 10px;
+    }
+    
+    #main-area {
+        padding: 10px;
+    }
+    
+    #drawer-content {
+        padding: 16px;
+    }
+    
+    .drawer-collapsed {
+        transform: translateY(calc(100% - 45px));
+    }
+    
+    #drawer-handle {
+        height: 45px;
+    }
+    
+    .quick-roll-btn {
+        right: 10px;
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+    
+    .handle-indicator {
+        width: 50px;
+        height: 5px;
+    }
+    
+    #drawer-handle:hover .handle-indicator {
+        width: 65px;
+    }
+    
+    #results-panel {
+        padding: 16px;
+    }
+    
+    .primary-button, .secondary-button {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+}
+
+/* Animation Classes */
+.dice-rolling {
+    pointer-events: none;
+}
+
+.dice-rolling #dice-container {
+    box-shadow: 
+        0 12px 40px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+        0 0 0 1px rgba(102, 126, 234, 0.3);
+    border-color: rgba(102, 126, 234, 0.5);
+}
+
+.fade-in {
+    animation: fadeIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(30px) scale(0.95); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    }
+}
+
+/* Hover states for containers */
+#dice-container:hover {
+    box-shadow: 
+        0 16px 48px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Smooth scrolling for any overflow */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Focus styles for accessibility */
+.dice-button:focus,
+.primary-button:focus,
+.secondary-button:focus,
+.dice-result:focus {
+    outline: 2px solid rgba(255, 255, 255, 0.6);
+    outline-offset: 2px;
+}
